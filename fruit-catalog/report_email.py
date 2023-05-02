@@ -5,14 +5,18 @@ import emails
 import os, glob
 import datetime
 
+user = os.getenv('USER')
+path = '/home/{}/supplier-data/descriptions/'.format(user)
+
 def write_pdf():
     names = []
     weights = []
-    for file in glob.glob("/supplier-data/descriptions/*"):
-         with open(file, 'rb') as f:
-             line = f.readlines().strip('\n')
-             name = line[0]
-             weigth = line[1]
+    for file in os.listdir(path):
+         filename = os.path.join(path, file)
+         with open(filename, 'rb') as f:
+             line = f.readlines()
+             name = line[0].decode('utf8').strip('\n')
+             weigth = line[1].decode('utf8').strip('\n')
              names.append('name: ' + name)
              weights.append('weight: ' + weigth)
     obj = ""
@@ -25,9 +29,9 @@ def write_pdf():
 if __name__ == "__main__":
     current_date = datetime.date.today().strftime("%B %d, %Y")
     title = "Processed Update on " + str(current_date) 
-    reports.generate_report('tmp/processed.pdf', title, write_pdf())
+    reports.generate_report('/tmp/processed.pdf', title, write_pdf())
     message = emails.generate_email("automation@example.com",
-                                    "username@example.com",
+                                    "{}@example.com".format(user),
                                     "Fruit Catalog Complete",
                                     "All fruits have been uploaded. PDF attached.",
                                     '/tmp/processed.pdf')

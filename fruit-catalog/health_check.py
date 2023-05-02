@@ -6,6 +6,8 @@ import os
 import socket
 import emails
 
+user = os.getenv('USER')
+
 def check_disk_space():
     du = shutil.disk_usage('/')
     free = du.free / du.total * 100
@@ -26,28 +28,32 @@ def check_localhost():
 
 def main():
     sender = "aumation@example.com"
-    recipient = "username@example.com"
+    recipient = "{}@example.com".format(user)
     body = "Please check your system and resolve the issue as soon as possible."
 
-    if not check_CPU_usage:
-        emails.generate_email(sender,
+    if not check_CPU_usage():
+        msg = emails.generate_email(sender,
                               recipient,
                               "Error - CPU usage is over 80%",
                               body)
-    if not check_disk_space:
-        emails.generate_email(sender,
+        emails.send_email(msg)
+    if not check_disk_space():
+        msg = emails.generate_email(sender,
                               recipient,
                               "Error - Available disk space is less than 20%",
                               body)
-    if not check_memory:
-        emails.generate_email(sender,
+        emails.send_email(msg)
+    if not check_memory():
+        msg = emails.generate_email(sender,
                               recipient,
                               "Error - Available memory is less than 500MB",
                               body)
-    if not check_localhost:
-        emails.generate_email(sender,
+        emails.send_email(msg)
+    if not check_localhost():
+        msg = emails.generate_email(sender,
                               recipient,
                               "Error - localhost cannot be resolved to 127.0.0.1",
                               body)
+        emails.send_email(msg)
 
 main()

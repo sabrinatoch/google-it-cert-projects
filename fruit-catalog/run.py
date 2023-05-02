@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
 
-import os, glob
+import os
 import requests
+import json
 
-url = "http://localhost/fruits"
-for file in glob.glob('/supplier-data/descriptions/*'):
-    data = open(file)
-    dataList = data.read().split('\n')
-    w = dataList[1]
-    intweight = int(w[0:w.index(" ")])
+user = os.getenv('USER')
+path = '/home/{}/supplier-data/descriptions/'.format(user)
+url = "http://localhost/fruits/"
+fruits = {}
 
-
-    dict = {
-        "name":dataList[0],
-        "weight":intweight,
-        "description":dataList[2],
-        "image_name":dataList[3]
-    }
-
-    response = requests.post(url, json=dict)
+for file in os.listdir(path):
+    data = open(path + file)
+    dataList = data.readlines()
+    fruits["name"] = dataList[0].strip('\n')
+    fruits["weight"] = int(dataList[1].strip('\n').strip('lbs'))
+    fruits["description"] = dataList[2].strip('\n')
+    fruits["image_name"] = file.strip('.txt')+'.jpeg'
+    req = requests.post(url, json=fruits)
     data.close()
