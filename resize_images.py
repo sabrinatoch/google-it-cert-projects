@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, glob
+import glob
 from PIL import Image
 
 for file in glob.glob("ic_*"):
